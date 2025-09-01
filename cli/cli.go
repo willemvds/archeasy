@@ -143,5 +143,10 @@ func PostInstall(args []string, stdout io.Writer, stderr io.Writer) error {
 		return err
 	}
 
+	err = installDesktopEnvironment(stdout, stderr)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
