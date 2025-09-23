@@ -73,7 +73,6 @@ func InstallNetworkManager(stdout io.Writer, stderr io.Writer) error {
 	return err
 }
 
-
 func StartNetworkManager(stdout io.Writer, stderr io.Writer) error {
 	currentUser, err := user.Current()
 	if err != nil || currentUser.Uid != RootId {

@@ -10,6 +10,9 @@ import (
 
 func main() {
 	args := os.Args
+	if len(args) < 2 {
+		args = append(args, "help")
+	}
 	switch args[1] {
 	case "post-install":
 		fmt.Println(cli.PostInstall(args, os.Stdout, os.Stderr))
