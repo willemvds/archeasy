@@ -12,6 +12,16 @@ var ErrRootRequired = errors.New("root required")
 func PostInstall(args []string, stdout io.Writer, stderr io.Writer) error {
 	var err error
 
+	err = InstallNetworkManager(stdout, stderr)
+	if err != nil {
+		return err
+	}
+
+	err = StartNetworkManager(stdout, stderr)
+	if err != nil {
+		return err
+	}
+
 	err = installMicrocodePackage(stdout, stderr)
 	if err != nil {
 		return err
