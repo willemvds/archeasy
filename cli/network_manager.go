@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"os/user"
 
+	"vds.io/archeasy/ansiseq"
 	"vds.io/archeasy/jobs"
 )
 
@@ -19,7 +20,9 @@ func InstallNetworkManager(logger *slog.Logger, stdout io.Writer, stderr io.Writ
 		return ErrRootRequired
 	}
 
+	ansiseq.TFS_Status(stdout)
 	fmt.Fprintf(stdout, "[ * ] Installing Network Manager.\n")
+	ansiseq.Reset(stdout)
 
 	ctx := context.Background()
 	stdoutReceived := 0
@@ -67,7 +70,9 @@ func InstallNetworkManager(logger *slog.Logger, stdout io.Writer, stderr io.Writ
 		return err
 	}
 
+	ansiseq.RGB(stdout, 20, 210, 10)
 	fmt.Fprintf(stdout, "[ OK ] Installed NetworkManager package.\n")
+	ansiseq.Reset(stdout)
 	return nil
 }
 
