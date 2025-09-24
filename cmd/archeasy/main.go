@@ -19,6 +19,7 @@ func main() {
 	case "networkmanager":
 		err := cli.InstallNetworkManager(os.Stdout, os.Stderr)
 		if err != nil {
+			fmt.Println(err)
 			os.Exit(exitcode.Failure)
 		}
 		fmt.Println(cli.StartNetworkManager(os.Stdout, os.Stderr))
