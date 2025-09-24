@@ -4,9 +4,6 @@ import (
 	"context"
 )
 
-type NetworkManager struct {
-}
-
 func InstallNetworkManager(ctx context.Context, stdoutCb ProgressCallback, stderrCb ProgressCallback) error {
 	job := NewExecJob()
 	job.StdoutCallback(stdoutCb)

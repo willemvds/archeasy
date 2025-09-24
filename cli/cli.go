@@ -3,16 +3,17 @@ package cli
 import (
 	"errors"
 	"io"
+	"log/slog"
 )
 
 const RootId = "0"
 
 var ErrRootRequired = errors.New("root required")
 
-func PostInstall(args []string, stdout io.Writer, stderr io.Writer) error {
+func PostInstall(logger *slog.Logger, args []string, stdout io.Writer, stderr io.Writer) error {
 	var err error
 
-	err = InstallNetworkManager(stdout, stderr)
+	err = InstallNetworkManager(logger, stdout, stderr)
 	if err != nil {
 		return err
 	}

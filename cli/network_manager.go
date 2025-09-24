@@ -6,13 +6,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"os/exec"
 	"os/user"
 
 	"vds.io/archeasy/jobs"
 )
 
-func InstallNetworkManager(stdout io.Writer, stderr io.Writer) error {
+func InstallNetworkManager(logger *slog.Logger, stdout io.Writer, stderr io.Writer) error {
 	currentUser, err := user.Current()
 	if err != nil || currentUser.Uid != RootId {
 		return ErrRootRequired
@@ -32,7 +33,11 @@ func InstallNetworkManager(stdout io.Writer, stderr io.Writer) error {
 			if lineErr != nil {
 				break
 			}
-			fmt.Fprintf(stdout, "[networkmanager:stdout] %s", line)
+			logger.Info(
+				"networkmanager",
+				slog.String("stream", "stdout"),
+				slog.String("line", string(line)),
+			)
 			stdoutPrinted += len(line)
 		}
 	}
@@ -47,7 +52,11 @@ func InstallNetworkManager(stdout io.Writer, stderr io.Writer) error {
 			if lineErr != nil {
 				break
 			}
-			fmt.Fprintf(stderr, "[networkmanager:stderr] %s", line)
+			logger.Info(
+				"networkmanager",
+				slog.String("stream", "stderr"),
+				slog.String("line", string(line)),
+			)
 			stderrPrinted += len(line)
 		}
 	}
