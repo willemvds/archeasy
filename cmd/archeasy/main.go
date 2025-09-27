@@ -31,11 +31,18 @@ func main() {
 			os.Exit(exitcode.Failure)
 		}
 		fmt.Println(cli.StartNetworkManager(os.Stdout, os.Stderr))
+	case "nerdfonts":
+		err := cli.InstallNerdFonts(logger, os.Stdout, os.Stderr)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(exitcode.Failure)
+		}
 	default:
 		fmt.Println("Usage: archeasy <command>")
 		fmt.Println("Commands:")
 		fmt.Println("\tpost-install")
 		fmt.Println("\tnetworkmanager")
+		fmt.Println("\tnerdfonts")
 		os.Exit(exitcode.Usage)
 	}
 }

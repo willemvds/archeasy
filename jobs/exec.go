@@ -1,9 +1,11 @@
 package jobs
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"io"
+	"log/slog"
 	osexec "os/exec"
 )
 
@@ -77,4 +79,33 @@ func (ej *ExecJob) exec(ctx context.Context, name string, args ...string) (stdou
 	stdout = <-stdoutCh
 	stderr = <-stderrCh
 	return stdout, stderr, err
+}
+
+func logProgressCallbackFn(logger *slog.Logger, stream string) ProgressCallback {
+	received := 0
+	logged := 0
+	return func(p []byte) {
+		diff := len(p) - received
+		received += diff
+		bio := bufio.NewReader(bytes.NewReader(p[logged:]))
+		for {
+			line, lineErr := bio.ReadBytes('\n')
+			if lineErr != nil {
+				break
+			}
+			logger.Info(
+				string(line),
+				slog.String("stream", stream),
+			)
+			logged += len(line)
+		}
+	}
+}
+
+func StdoutLogProgressCallbackFn(logger *slog.Logger) ProgressCallback {
+	return logProgressCallbackFn(logger, "stdout")
+}
+
+func StderrLogProgressCallbackFn(logger *slog.Logger) ProgressCallback {
+	return logProgressCallbackFn(logger, "stderr")
 }
