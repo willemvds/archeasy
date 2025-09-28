@@ -37,12 +37,15 @@ func main() {
 			fmt.Println(err)
 			os.Exit(exitcode.Failure)
 		}
+	case "system-upgrades":
+		fmt.Println(cli.InstallSystemUpgrades(logger, os.Stdout, os.Stderr))
 	default:
 		fmt.Println("Usage: archeasy <command>")
 		fmt.Println("Commands:")
 		fmt.Println("\tpost-install")
 		fmt.Println("\tnetworkmanager")
 		fmt.Println("\tnerdfonts")
+		fmt.Println("\tsystem-upgrades")
 		os.Exit(exitcode.Usage)
 	}
 }

@@ -35,6 +35,7 @@ func collect(rdr io.Reader, bufSize uint, doneCh chan<- []byte, progressCallback
 type ExecJob struct {
 	stdoutCallbacks []ProgressCallback
 	stderrCallbacks []ProgressCallback
+	pidCh           chan int
 }
 
 func NewExecJob() ExecJob {
@@ -53,6 +54,10 @@ func (xj *ExecJob) StderrCallback(cb ProgressCallback) {
 	xj.stderrCallbacks = append(xj.stderrCallbacks, cb)
 }
 
+func (xj *ExecJob) PidChannel(pidCh chan int) {
+	xj.pidCh = pidCh
+}
+
 func (ej *ExecJob) exec(ctx context.Context, name string, args ...string) (stdout []byte, stderr []byte, err error) {
 	cmd := osexec.CommandContext(ctx, name, args...)
 	stdoutPipe, err := cmd.StdoutPipe()
@@ -66,7 +71,15 @@ func (ej *ExecJob) exec(ctx context.Context, name string, args ...string) (stdou
 
 	err = cmd.Start()
 	if err != nil {
+		if ej.pidCh != nil {
+			close(ej.pidCh)
+		}
+
 		return nil, nil, err
+	}
+	if ej.pidCh != nil {
+		ej.pidCh <- cmd.Process.Pid
+		close(ej.pidCh)
 	}
 
 	stdoutCh := make(chan []byte, 2)
