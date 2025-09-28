@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	"vds.io/archeasy/cli"
 	"vds.io/archeasy/exitcode"
 )
 
 func main() {
-	logfh, err := os.OpenFile("archeasy.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logPath := fmt.Sprintf("archeasy-%s.log", time.Now().Format("2006_01_02_1504_05"))
+	logfh, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(exitcode.Failure)
