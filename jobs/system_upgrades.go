@@ -1,14 +1,24 @@
 package jobs
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"log/slog"
 	"os"
+	osexec "os/exec"
 	"slices"
 	"time"
 )
+
+type execResult struct {
+	err    error
+	stdout []byte
+	stderr []byte
+}
+
+var ErrPacmanDBLocked = errors.New("pacman DB is locked")
 
 func InstallSystemUpgrades(ctx context.Context, logger *slog.Logger) error {
 	job := NewExecJob()
@@ -17,7 +27,7 @@ func InstallSystemUpgrades(ctx context.Context, logger *slog.Logger) error {
 	pidCh := make(chan int, 2)
 	job.PidChannel(pidCh)
 	allHopeIsLostCh := make(chan error)
-	execCh := make(chan error)
+	execCh := make(chan execResult)
 
 	go func() {
 		pid := <-pidCh
@@ -35,18 +45,27 @@ func InstallSystemUpgrades(ctx context.Context, logger *slog.Logger) error {
 				return
 			}
 			prevStat = stat
-			time.Sleep(2 * time.Second)
+			time.Sleep(10 * time.Second)
 		}
 	}()
 
 	go func() {
-		_, _, err := job.exec(ctx, "pacman", "-Syyu", "--noconfirm")
-		execCh <- err
+		stdout, stderr, err := job.exec(ctx, "pacman", "-Syyu", "--noconfirm")
+		execCh <- execResult{
+			err:    err,
+			stdout: stdout,
+			stderr: stderr,
+		}
 	}()
 
 	select {
-	case err := <-execCh:
-		return err
+	case res := <-execCh:
+		if _, ok := res.err.(*osexec.ExitError); ok {
+			if bytes.Contains(res.stderr, []byte("unable to lock database")) {
+				return ErrPacmanDBLocked
+			}
+		}
+		return res.err
 	case err := <-allHopeIsLostCh:
 		return err
 	}
