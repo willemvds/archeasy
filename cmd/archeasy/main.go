@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log/slog"
 	"os"
@@ -40,7 +41,9 @@ func main() {
 			os.Exit(exitcode.Failure)
 		}
 	case "system-upgrades":
-		fmt.Println(cli.InstallSystemUpgrades(logger, os.Stdout, os.Stderr))
+		bufferedStdout := bufio.NewWriter(os.Stdout)
+		bufferedStderr := bufio.NewWriter(os.Stderr)
+		fmt.Println(cli.InstallSystemUpgrades(logger, bufferedStdout, bufferedStderr))
 	default:
 		fmt.Println("Usage: archeasy <command>")
 		fmt.Println("Commands:")
