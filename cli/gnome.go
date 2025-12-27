@@ -41,6 +41,12 @@ func GnomeSettings(logger *slog.Logger, stdout io.Writer, stderr io.Writer) erro
 		return errors.New("1 or more keybinds failed")
 	}
 
+	err := jobs.GnomeClockFormat(ctx, logger, jobs.GnomeClockFormat24H)
+	if err != nil {
+		fmt.Fprintf(stdout, "[ F ] (Clock Format -> 24h) %s.\n", err)
+		return err
+	}
+
 	ansiseq.RGB(stdout, 20, 210, 10)
 	fmt.Fprintf(stdout, "[ OK ] Update GNOME Settings (keybinds).\n")
 	ansiseq.Reset(stdout)
