@@ -32,6 +32,21 @@ func GnomeClockFormat(ctx context.Context, logger *slog.Logger, value string) er
 	return err
 }
 
+func GnomeClockShowWeekday(ctx context.Context, logger *slog.Logger, on bool) error {
+	job := NewExecJob()
+	job.StdoutCallback(StdoutLogProgressCallbackFn(logger))
+	job.StderrCallback(StderrLogProgressCallbackFn(logger))
+
+	value := "false"
+	if on {
+		value = "true"
+	}
+
+	_, _, err := job.exec(ctx, "gsettings", "set", "org.gnome.desktop.interface", "clock-show-weekday", value)
+
+	return err
+}
+
 func GnomeKeybind(ctx context.Context, logger *slog.Logger, action string, key string) error {
 	job := NewExecJob()
 	job.StdoutCallback(StdoutLogProgressCallbackFn(logger))

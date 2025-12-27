@@ -47,6 +47,12 @@ func GnomeSettings(logger *slog.Logger, stdout io.Writer, stderr io.Writer) erro
 		return err
 	}
 
+	err = jobs.GnomeClockShowWeekday(ctx, logger, true)
+	if err != nil {
+		fmt.Fprintf(stdout, "[ F ] (Clock Show Weekday -> true) %s.\n", err)
+		return err
+	}
+
 	ansiseq.RGB(stdout, 20, 210, 10)
 	fmt.Fprintf(stdout, "[ OK ] Update GNOME Settings (keybinds).\n")
 	ansiseq.Reset(stdout)
