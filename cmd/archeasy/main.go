@@ -44,6 +44,8 @@ func main() {
 		bufferedStdout := bufio.NewWriter(os.Stdout)
 		bufferedStderr := bufio.NewWriter(os.Stderr)
 		fmt.Println(cli.InstallSystemUpgrades(logger, bufferedStdout, bufferedStderr))
+	case "gnome-settings":
+		fmt.Println(cli.GnomeSettings(logger, os.Stdout, os.Stderr))
 	default:
 		fmt.Println("Usage: archeasy <command>")
 		fmt.Println("Commands:")
